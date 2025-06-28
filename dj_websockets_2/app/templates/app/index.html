@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Real time app</title>
+</head>
+<body>
+    <h1>Live logs via websockets, awesome work Amitabh! </h1>
+    <h4 id="ct" style="font-family: 'Courier New', Courier, monospace;">
+
+    </h4>
+    {% comment %} <script>
+        //var ws = new WebSocket('ws://localhost:8001/ws/sc/');
+        var ws = new WebSocket('ws://localhost:8001/ws/log/');
+
+
+        ws.onopen = function() {
+            console.log('WebSocket is open now.');
+            ws.send(JSON.stringify({
+                message: "Hello from the client!",
+                script_path : "C:\\GitHub\\Django-WebSockets\\dj_websockets_2\\app\\user_scripts\\test_logging.py"
+            }));
+        };
+        
+        
+        // Executes when the server responds
+        ws.onmessage = function(event) {
+            console.log('Raw message from server onmessage:', event.data);
+            try {
+                var data = JSON.parse(event.data);
+                document.getElementById('ct').innerText += data.log_lines + "\n";
+            } catch (error) {
+                console.error('Error parsing JSON:', error);
+            }
+        };
+
+        ws.onerror = function(event) {
+            console.log('WebSocket error: ', event);
+        };
+
+        ws.onclose = function(event) {
+            console.log('WebSocket is closed now.', event);
+        }; 
+
+    </script> {% endcomment %}
+
+    <script>
+        const logContainer = document.getElementById('log-container');
+        const socket = new WebSocket('ws://localhost:8001/ws/logs/');
+
+        socket.onopen = function(e) {
+            console.log('WebSocket connection established.', e);
+        };
+
+
+        {% comment %} socket.onmessage = function(event) {
+            const logMessage = event.data;
+            console.log('Received log message:', logMessage);
+            const logEntry = document.createElement('div');
+            logEntry.textContent = logMessage;
+            logContainer.appendChild(logEntry);
+            logContainer.scrollTop = logContainer.scrollHeight;
+        }; {% endcomment %}
+
+        socket.onmessage = function(event) {
+            {% comment %} const logMessage = JSON.parse(event.data); {% endcomment %}
+            {% comment %} console.log('Raw message from server onmessage:', event.data); {% endcomment %}
+            var data = JSON.parse(event.data);
+            console.log('Received log message:', data);
+
+            document.getElementById('ct').innerText += data.log_lines + "\n";
+            {% comment %} logEntry.textContent = logMessage.log_lines; {% endcomment %}
+            {% comment %} logContainer.appendChild(logEntry); {% endcomment %}
+            {% comment %} logContainer.scrollTop = logContainer.scrollHeight; {% endcomment %}
+        };
+
+        socket.onclose = function(e) {
+            console.log('WebSocket connection closed.');
+        };
+
+        socket.onerror = function(error) {
+            console.error('WebSocket error:', error);
+        };
+    </script>
+
+</body>
+</html>
